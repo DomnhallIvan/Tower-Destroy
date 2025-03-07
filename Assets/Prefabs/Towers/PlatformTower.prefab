@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2441534210409676226}
   - component: {fileID: 7385814284249666592}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlatformTower
   m_TagString: GridTower
   m_Icon: {fileID: 0}

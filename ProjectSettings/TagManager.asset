@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GridTower
   - ocuppiedTower
+  - enemy
   layers:
   - Default
   - TransparentFX
@@ -16,9 +17,9 @@ TagManager:
   - Walkable Enemy
   - 'Water '
   - Air
-  - 
-  - 
-  - 
+  - enemy
+  - turret
+  - endzone
   - 
   - 
   - 

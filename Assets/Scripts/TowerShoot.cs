@@ -1,26 +1,40 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TowerShoot : MonoBehaviour
 {
+    [Header("Rotation")]
     [SerializeField] Transform _core;
     [SerializeField] Transform _gun;
 
     private List<GameObject> _enemiesInRange=new List<GameObject>();
-
     private GameObject currentTarget;
 
+    [Space]
     [SerializeField] private float _turningSpeed=10;
     [SerializeField] private float _angleTurningAccuracy = 80;
+
+    [Header("Shoot")]
+    private float timeLastSpeedChange = 0f;
+    [SerializeField] private float _fireRate = 1.2f;
+    [SerializeField] private float _bulletForce = 200;
+    [SerializeField] private Transform _firePoint;
+    private ObjectPool bulletPool;
+
+    private void Awake()
+    {
+        bulletPool = FindObjectOfType<ObjectPool>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("enemy"))
         {
-            Debug.Log("Hello");
+            //Debug.Log("Hello");
             _enemiesInRange.Add(other.gameObject);
             UpdateTarget();
         }
@@ -67,7 +81,7 @@ public class TowerShoot : MonoBehaviour
 
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (currentTarget != null)
         {
@@ -83,15 +97,28 @@ public class TowerShoot : MonoBehaviour
 
             Vector3 directionToTarget=currentTarget.transform.position-_gun.transform.position;
 
+            timeLastSpeedChange += Time.deltaTime;
+            if(timeLastSpeedChange>=_fireRate)
             if (Vector3.Angle(directionToTarget, _gun.transform.forward) < _angleTurningAccuracy){
-                Fire();
+                Fire(_firePoint.position,_firePoint.forward);
+                    timeLastSpeedChange = 0f;
             }
         }
     }
 
-    private void Fire()
+    private void Fire(Vector3 firePointPosition, Vector3 fireDirection)
     {
-        Debug.Log("FiringAtEnemies");
+        GameObject fire = bulletPool.GetFromPool();
+        fire.transform.position = firePointPosition;
+        fire.transform.rotation = Quaternion.identity;
+
+        Rigidbody bulletRB = fire.GetComponent<Rigidbody>();
+        if (bulletRB != null)
+        {
+            bulletRB.velocity = Vector3.zero;
+            bulletRB.AddForce(fireDirection * _bulletForce);
+            fire.GetComponent<BallProjectile>().ReturnDamage(30);
+        }
 
     }
 }
