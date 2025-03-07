@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
-{
+{   
     [SerializeField] private LevelManager _levelManager;
 
     public List<Transform> wayPoint;
