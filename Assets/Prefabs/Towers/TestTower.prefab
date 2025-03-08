@@ -160,8 +160,9 @@ MonoBehaviour:
   _gun: {fileID: 5480836016226473537}
   _turningSpeed: 10
   _angleTurningAccuracy: 80
-  FireRate: 5
-  BulletForce: 40
+  _damage: 30
+  _fireRate: 0.6
+  _bulletForce: 80
   _firePoint: {fileID: 1817923645381998632}
 --- !u!135 &180465242282966137
 SphereCollider:

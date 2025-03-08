@@ -2,20 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallProjectile : MonoBehaviour
+public class BallProjectile : ProjectileData
 {
     [Header("Referencias")]
-    public Rigidbody rb;
-    //private GameManager gameManager;
-
-    [Header("Datos")]
-    private int porteriaLayer;
-    private int playerLayer;
-    private int bolaLayer;
-    private Vector3 lastVelocity;
-    [SerializeField] private int damage = 10;
-    [SerializeField] private int NumOfBounces = 20;
-    private int curBounces = 0;
+    public Rigidbody rb;    
 
     private void Awake()
     {
@@ -47,9 +37,6 @@ public class BallProjectile : MonoBehaviour
         }
         if (collision.gameObject.layer == playerLayer || collision.gameObject.layer == bolaLayer)
         {
-
-            curBounces++;
-            if (curBounces <= NumOfBounces) return;
             ReturnToPool();
         }
     }
@@ -59,7 +46,6 @@ public class BallProjectile : MonoBehaviour
         ObjectPool pool = FindObjectOfType<ObjectPool>();
         if (pool != null)
         {
-            curBounces = 0;
             pool.ReturnToPool(gameObject);
         }
     }

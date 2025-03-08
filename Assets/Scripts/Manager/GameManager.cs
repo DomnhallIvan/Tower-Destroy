@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public Player playerRef;
     public GameUI gameUI;
     public System.Action onReset;
+    public System.Action onStartGame;
 
     private void Awake()
     {
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
         else
         {
             instance = this;
-            gameUI.onStartGame += OnStartGame;
+            onStartGame += OnStartGame;
         }
     }
 
@@ -42,25 +43,22 @@ public class GameManager : MonoBehaviour
                 playerRef.healthPoints = 0;                
                 playerRef.isDead = true;
                 //playerRef.Dead();
+                gameUI.OnGameFailure(); //Se manda el jugador que gano
+                onReset?.Invoke();
             }        
     }
 
-    private void CheckWin()
+    public void Win()
     {
-        /*
-        if (remainingPlayers.Count == 1)
-        {
-            int WINNERId = players[0].isDead != true ? 1 : players[1].isDead != true ? 2 : players[2].isDead != true ? 3 : players[3].isDead != true ? 4 : 0;
-            gameUI.OnGameEnds(WINNERId); //Se manda el jugador que gano
-            onReset?.Invoke();
-        }*/
+       gameUI.OnGameEnds();
+        onReset?.Invoke();
 
     }
 
     private void OnStartGame()
     {
         //Reinicia vidas, el ScoreUI, y resetea toda la lista de RemainingPlayers
-        playerRef.healthPoints = 20;
+        playerRef.healthPoints = playerRef.maxHealthPoints;
         gameUI.UpdateScores(playerRef.healthPoints);
 
 

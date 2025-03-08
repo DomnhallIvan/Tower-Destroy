@@ -12,10 +12,7 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Canvas menuCanvas;
     [SerializeField] private TextMeshProUGUI winText;
 
-    public System.Action onStartGame;
-
-
-
+   
 
     public void UpdateScores(int scorePlayer1)
     {
@@ -25,7 +22,7 @@ public class GameUI : MonoBehaviour
 
     public void UpdateImage()
     {
-        if (playerRef.healthPoints <= 10)
+        if (playerRef.healthPoints <= 2)
         {
             playerImage.sprite = playerRef.sadFace;
         }        
@@ -41,7 +38,7 @@ public class GameUI : MonoBehaviour
     {
         menuCanvas.enabled = false;
         ResetImage();
-        onStartGame?.Invoke();
+        GameManager.instance.onStartGame?.Invoke();
     }
 
     public void OnGameFailure()

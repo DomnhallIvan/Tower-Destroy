@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda75fce242f5c14b88f06ae7efe4db9, type: 3}
+  m_Name: Wave3SO
+  m_EditorClassIdentifier: 
+  enemies:
+  - enemyPrefab: {fileID: 6670072589722773976, guid: 5f996f6fa7276b3409c0b57b7e59061d, type: 3}
+    count: 5
+  - enemyPrefab: {fileID: 6670072589722773976, guid: 77d2d06d99e85b6418c5c25ed74a8382, type: 3}
+    count: 3
+  - enemyPrefab: {fileID: 6670072589722773976, guid: dbe1c382dd2c7d3429c1ef22f2fdcb1d, type: 3}
+    count: 3
+  spawnRate: 0.8

@@ -1,29 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO.Pipes;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class TowerShoot : MonoBehaviour
-{
-    [Header("Rotation")]
-    [SerializeField] Transform _core;
-    [SerializeField] Transform _gun;
-
+public class TowerShoot : TowerData
+{   
     private List<GameObject> _enemiesInRange=new List<GameObject>();
     private GameObject currentTarget;
-
-    [Space]
-    [SerializeField] private float _turningSpeed=10;
-    [SerializeField] private float _angleTurningAccuracy = 80;
-
-    [Header("Shoot")]
-    private float timeLastSpeedChange = 0f;
-    [SerializeField] private float _fireRate = 1.2f;
-    [SerializeField] private float _bulletForce = 200;
-    [SerializeField] private Transform _firePoint;
     private ObjectPool bulletPool;
+
 
     private void Awake()
     {
@@ -34,7 +19,6 @@ public class TowerShoot : MonoBehaviour
     {
         if (other.gameObject.CompareTag("enemy"))
         {
-            //Debug.Log("Hello");
             _enemiesInRange.Add(other.gameObject);
             UpdateTarget();
         }
@@ -52,32 +36,29 @@ public class TowerShoot : MonoBehaviour
 
     private void UpdateTarget()
     {
-        if (currentTarget != null) {
+        //Filters out null enemies
+        _enemiesInRange.RemoveAll(enemy => enemy == null); // Remove destroyed enemies
+
+        //Checks if the current target is null or no longer valid
+        if (currentTarget != null && _enemiesInRange.Contains(currentTarget))
+        {
             return;
-        }GameObject closestEnemy = null;
+        }
+
+        GameObject closestEnemy = null;
         float closestDistance = float.MaxValue;
 
         foreach (GameObject enemy in _enemiesInRange)
         {
-            if (enemy == null) { return; }
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distanceToEnemy < closestDistance)
             {
-                float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distanceToEnemy<closestDistance)
-                {
-                    closestDistance= distanceToEnemy;
-                    closestEnemy = enemy;
-                }
+                closestDistance = distanceToEnemy;
+                closestEnemy = enemy;
             }
         }
 
-        if (closestEnemy != null)
-        {
-            currentTarget = closestEnemy;
-        }
-        else
-        {
-            currentTarget = null;
-        }
+        currentTarget = closestEnemy;
 
     }
 
@@ -96,13 +77,22 @@ public class TowerShoot : MonoBehaviour
             _core.transform.rotation = Quaternion.Slerp(_core.transform.rotation, Quaternion.LookRotation(aimAt - _core.transform.position), Time.deltaTime * _turningSpeed);
 
             Vector3 directionToTarget=currentTarget.transform.position-_gun.transform.position;
-
+            
             timeLastSpeedChange += Time.deltaTime;
-            if(timeLastSpeedChange>=_fireRate)
-            if (Vector3.Angle(directionToTarget, _gun.transform.forward) < _angleTurningAccuracy){
-                Fire(_firePoint.position,_firePoint.forward);
+            if (timeLastSpeedChange >= _fireRate)
+            {
+                if (Vector3.Angle(directionToTarget, _gun.transform.forward) < _angleTurningAccuracy)
+                {
+                    Fire(_firePoint.position, _firePoint.forward);
                     timeLastSpeedChange = 0f;
+                }
+                else
+                {
+                    // Reset timer slightly so tower doesn't get "stuck" waiting for perfect alignment
+                    timeLastSpeedChange = Mathf.Min(timeLastSpeedChange, _fireRate - 0.1f);
+                }
             }
+
         }
     }
 
@@ -115,9 +105,11 @@ public class TowerShoot : MonoBehaviour
         Rigidbody bulletRB = fire.GetComponent<Rigidbody>();
         if (bulletRB != null)
         {
+            //Fix to reset angularVelocity and set the ForceMode.Impulse
             bulletRB.velocity = Vector3.zero;
-            bulletRB.AddForce(fireDirection * _bulletForce);
-            fire.GetComponent<BallProjectile>().ReturnDamage(30);
+            bulletRB.angularVelocity = Vector3.zero;
+            bulletRB.AddForce(fireDirection * _bulletForce, ForceMode.Impulse);
+            fire.GetComponent<BallProjectile>().ReturnDamage(_damage);
         }
 
     }
